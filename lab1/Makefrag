@@ -1,0 +1,16 @@
+OBJDIRS += lab1
+
+LBA1_CCFILES  += lab1/main.cc\
+
+LAB1_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(LBA1_CCFILES))
+
+$(OBJDIR)/lab1/%.o: lab1/%.cc
+	@echo + cc $<
+	@mkdir -p $(@D)
+	$(V)$(CC) $(CCFLAGS) -Ilibs/freeimage -c $< -o $@	
+
+$(OBJDIR)/lab1/main: $(LAB1_OBJFILES)
+	@echo + ld $<
+	$(V)$(CC) -o $@ $^ $(LDFLAGS) -Llibs/freeimage -lfreeimage
+
+all: $(OBJDIR)/lab1/main
