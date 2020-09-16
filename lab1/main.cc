@@ -65,8 +65,6 @@ int transformation(const Mat &src, Mat &dst, float (*transform)(float)) {
       }
     }
   }
-  // change dst to 8bit
-  convertScaleAbs(dst, dst);
   return 0;
 }
 
@@ -83,10 +81,9 @@ void *show_gif(void *gif_path) {
                                                  1, 0, GIF_PLAYBACK);
   int frame_count = FreeImage_GetPageCount(gif);
 
-  RGBQUAD *palette = new RGBQUAD;
   // create a new Image
   IplImage *ipl_image = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
-  ipl_image->origin = 1;
+  RGBQUAD *palette = new RGBQUAD;
   while (1) {
     for (int cur_frame = 0; cur_frame < frame_count; ++cur_frame) {
       // read per frame
@@ -123,7 +120,7 @@ end:
 int main() {
   const std::string gif_name = "images/fig1.gif";
   const std::string img_name = "images/fig1.png";
-  const Mat img = imread(img_name, IMREAD_GRAYSCALE);
+  const Mat img = imread(img_name);
   Mat dst_log, dst_power, dst_contrast_upper, dst_contrast_lower;
 
   int pid = fork();
