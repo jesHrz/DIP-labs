@@ -7,7 +7,7 @@ endif
 
 CC = g++
 
-OPENCV_CCFLAGS 	:= $(shell pkg-config --cflags opencv)
+OPENCV_CCFLAGS 	  := $(shell pkg-config --cflags opencv)
 OPENCV_LIBS 	  := $(shell pkg-config --libs opencv)
 
 CCFLAGS = -g -Wall $(OPENCV_CCFLAGS) -Iinc -I./ -std=c++11
