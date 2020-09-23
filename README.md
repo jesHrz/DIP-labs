@@ -11,7 +11,7 @@ make
 To run the binary of one lab:
 
 ```
-make run-lab1
+make lab1
 ```
 
 To clean all files produced during the build process:
