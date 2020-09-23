@@ -19,7 +19,8 @@ OBJDIRS :=
 all:
 
 include lab1/Makefrag
+include lab2/Makefrag
 
-.PHONY : clean run
+.PHONY : clean
 clean:
 	-rm -rf $(OBJDIR)
