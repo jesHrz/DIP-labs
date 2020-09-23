@@ -23,6 +23,3 @@ include lab1/Makefrag
 .PHONY : clean run
 clean:
 	-rm -rf $(OBJDIR)
-
-run-%: $(OBJDIR)/%
-	./$</main

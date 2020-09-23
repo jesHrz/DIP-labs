@@ -14,3 +14,6 @@ $(OBJDIR)/lab1/main: $(LAB1_OBJFILES)
 	$(V)$(CC) -o $@ $^ $(LDFLAGS) -Llibs/freeimage -lfreeimage
 
 all: $(OBJDIR)/lab1/main
+
+lab1: $(OBJDIR)/lab1/main
+	./$(OBJDIR)/lab1/main
