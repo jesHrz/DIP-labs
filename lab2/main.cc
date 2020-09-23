@@ -6,8 +6,8 @@
 
 using namespace cv;
 
-#define SCALE_X 0.6
-#define SCALE_Y 0.6
+#define SCALE_X 1.6
+#define SCALE_Y 1.6
 
 // 两次水平一次垂直
 float bilinear_x(float a, float b, float c, float d, float dx, float dy) {
@@ -71,9 +71,9 @@ int imwarp(const Mat &src, Mat &dst,
         // normalize
         x = (float)(col - (float)cols / 2) / (float)cols * 2;
         y = (float)(row - (float)rows / 2) / (float)rows * 2;
+        
         r = sqrt(x * x + y * y);
         theta = (1 - r) * (1 - r);
-
         tx = x, ty = y;
         if (r < 1) {
           tx = cos(theta) * x - sin(theta) * y;
