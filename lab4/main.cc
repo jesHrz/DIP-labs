@@ -24,8 +24,13 @@ int gaussian(const Mat &src, Mat &dst, float sigma) {
   int channels = src.channels();
 
   std::vector<float> kernel(2 * w + 1, 0);
+  float sum = 0;
   for (int i = -w; i <= w; ++i) {
     kernel[i + w] = exp(-1.0 * i * i / (sigma * sigma * 2)) / (sqrt(pi * 2) * sigma);
+    sum += kernel[i + w];
+  }
+  for (int i = -w; i <= w; ++i) {
+    kernel[i + w] /= sum;
   }
 
   for (int ch = 0; ch < channels; ++ch) {
@@ -79,8 +84,8 @@ int median(const Mat &src, Mat &dst, int w) {
   int rows = src.rows;
   int cols = src.cols;
   int channels = src.channels();
-  std::vector<int> avg;
 
+  std::vector<int> avg;
   for (int ch = 0; ch < channels; ++ch) {
     for (int row = 0; row < rows; ++row) {
       for (int col = 0; col < cols; ++col) {

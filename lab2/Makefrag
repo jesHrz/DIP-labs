@@ -1,20 +1,20 @@
-CWD = $(OBJDIR)/lab2
+CWD = 
 OBJDIRS += lab2
 
-LBA2_CCFILES  += lab2/main.cc\
+LAB2_CCFILES  += lab2/main.cc\
 
-LAB2_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(LBA2_CCFILES))
+LAB2_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(LAB2_CCFILES))
 
-$(CWD)/%.o: lab2/%.cc
+$(OBJDIR)/lab2/%.o: lab2/%.cc
 	@echo + cc $<
 	@mkdir -p $(@D)
 	$(V)$(CC) $(CCFLAGS) -c $< -o $@	
 
-$(CWD)/main: $(LAB2_OBJFILES)
+$(OBJDIR)/lab2/main: $(LAB2_OBJFILES)
 	@echo + ld $<
 	$(V)$(CC) -o $@ $^ $(LDFLAGS)
 
-all: $(CWD)/main
+all: $(OBJDIR)/lab2/main
 
-lab2: $(CWD)/main
-	./$(CWD)/main
+lab2: $(OBJDIR)/lab2/main
+	./$(OBJDIR)/lab2/main

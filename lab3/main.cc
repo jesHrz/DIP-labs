@@ -33,7 +33,7 @@ int histogram(const Mat &src, Mat &dst) {
     } 
     for (int row = 0; row < rows; ++row) {
       for (int col = 0; col < cols; ++col) {
-        dst.at<Vec3b>(row, col)[ch] = (int)(0.5 + p[src.at<Vec3b>(row, col)[ch]] / n);
+        dst.at<Vec3b>(row, col)[ch] = (int)((float)p[src.at<Vec3b>(row, col)[ch]] / n + 0.5);
       }
     }
   }

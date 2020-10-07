@@ -1,8 +1,8 @@
 OBJDIRS += lab1
 
-LBA1_CCFILES  += lab1/main.cc\
+LAB1_CCFILES  += lab1/main.cc\
 
-LAB1_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(LBA1_CCFILES))
+LAB1_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(LAB1_CCFILES))
 
 $(OBJDIR)/lab1/%.o: lab1/%.cc
 	@echo + cc $<
