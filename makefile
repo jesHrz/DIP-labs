@@ -21,6 +21,7 @@ all:
 include lab1/Makefrag
 include lab2/Makefrag
 include lab3/Makefrag
+include lab4/Makefrag
 
 .PHONY : clean
 clean:
