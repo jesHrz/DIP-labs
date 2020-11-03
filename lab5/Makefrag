@@ -1,0 +1,20 @@
+CWD = $(OBJDIR)/lab5
+OBJDIRS += lab5
+
+LAB5_CCFILES  += lab5/main.cc\
+
+LAB5_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(LAB5_CCFILES))
+
+$(CWD)/%.o: lab5/%.cc
+	@echo + cc $<
+	@mkdir -p $(@D)
+	$(V)$(CC) $(CCFLAGS) -c $< -o $@	
+
+$(CWD)/main: $(LAB5_OBJFILES)
+	@echo + ld $<
+	$(V)$(CC) -o $@ $^ $(LDFLAGS)
+
+all: $(CWD)/main
+
+lab5: $(CWD)/main
+	./$(CWD)/main
