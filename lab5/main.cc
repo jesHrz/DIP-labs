@@ -27,16 +27,16 @@ int main() {
     }
   }
 
-  if (!ILPF(dft, pf, 50) && !IDFT(pf, pf.mat)) {
+  if (!ILPF(dft, pf, 10) && !IDFT(pf, pf.mat)) {
     cv::imshow("ILPF", pf.mat);
   }
-  if (!IHPF(dft, pf, 50) && !IDFT(pf, pf.mat)) {
+  if (!IHPF(dft, pf, 10) && !IDFT(pf, pf.mat)) {
     imshow("IHPF", pf.mat);
   }
-  if (!BLPF(dft, pf, 50, 5) && !IDFT(pf, pf.mat)) {
+  if (!BLPF(dft, pf, 10, 5) && !IDFT(pf, pf.mat)) {
     imshow("BLPF", pf.mat);
   }
-  if (!BHPF(dft, pf, 50, 5) && !IDFT(pf, pf.mat)) {
+  if (!BHPF(dft, pf, 10, 5) && !IDFT(pf, pf.mat)) {
     imshow("BHPF", pf.mat);
   }
 
