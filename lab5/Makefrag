@@ -2,6 +2,8 @@ CWD = $(OBJDIR)/lab5
 OBJDIRS += lab5
 
 LAB5_CCFILES  += lab5/main.cc\
+				 lab5/complex.cc\
+				 lab5/fourier.cc\
 
 LAB5_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(LAB5_CCFILES))
 
