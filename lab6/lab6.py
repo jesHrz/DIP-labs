@@ -22,7 +22,7 @@ device = pt.device('cuda' if pt.cuda.is_available() else 'cpu')
 
 # %% [code]
 class ResidualBlock(nn.Module):
-    def __init__(self, inchannel, outchannel, stride=1):
+    def __init__(self, inchannel, outchannel, stride):
         super(ResidualBlock, self).__init__()
         self.left = nn.Sequential(
             nn.Conv2d(inchannel, outchannel, kernel_size=3, stride=stride, padding=1),
@@ -45,7 +45,7 @@ class ResidualBlock(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self, ResidualBlock, num_classes=10):
+    def __init__(self, ResidualBlock):
         super(ResNet, self).__init__()
         self.inchannel = 64
         self.conv1 = nn.Sequential(
@@ -57,7 +57,7 @@ class ResNet(nn.Module):
         self.layer2 = self.make_layer(ResidualBlock, 128, 2, stride=2)
         self.layer3 = self.make_layer(ResidualBlock, 256, 2, stride=2)
         self.layer4 = self.make_layer(ResidualBlock, 512, 2, stride=2)
-        self.fc = nn.Linear(512, num_classes)
+        self.fc = nn.Linear(512, 10)
         
     def make_layer(self, block, channels, num_blocks, stride):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -107,7 +107,6 @@ class Model(object):
     
     def train(self, optimizer, criterion):
         import time
-        import random
         
         self.train_acc, self.train_loss = [], []
         self.test_acc, self.test_loss = [], []
@@ -122,8 +121,9 @@ class Model(object):
             
             for train_data in self.train_loader:
                 features, labels = train_data
-                features, labels = Variable(features).to(device), Variable(labels).to(device)
+                features, labels = features.to(device), labels.to(device)
                 self.model.train()
+
                 optimizer.zero_grad()
                 outputs = self.model(features)
                 
@@ -136,11 +136,12 @@ class Model(object):
             
             for test_data in self.test_loader:
                 features, labels = train_data
-                features, labels = Variable(features).to(device), Variable(labels).to(device)
+                features, labels = features.to(device), labels.to(device)
                 self.model.eval()
+
                 outputs = self.model(features)
-                
                 loss = criterion(outputs, labels)
+
                 te_acc.append(float(pt.sum(pt.argmax(outputs, dim=1) == labels)) / batch_size)
                 te_loss.append(float(loss))
                 
