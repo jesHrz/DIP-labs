@@ -1,0 +1,21 @@
+CWD = $(OBJDIR)/sidewindow
+OBJDIRS += sidewindow
+
+PROJ_CCFILES  += sidewindow/main.cc\
+				 sidewindow/side_window_filter.cc\
+
+PROJ_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(PROJ_CCFILES))
+
+$(CWD)/%.o: sidewindow/%.cc
+	@echo + cc $<
+	@mkdir -p $(@D)
+	$(V)$(CC) $(CCFLAGS) -c $< -o $@	
+
+$(CWD)/main: $(PROJ_OBJFILES)
+	@echo + ld $<
+	$(V)$(CC) -o $@ $^ $(LDFLAGS)
+
+all: $(CWD)/main
+
+side: $(CWD)/main
+	./$(CWD)/main

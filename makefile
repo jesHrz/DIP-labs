@@ -10,7 +10,7 @@ CC = g++
 OPENCV_CCFLAGS 	  := $(shell pkg-config --cflags opencv)
 OPENCV_LIBS 	  := $(shell pkg-config --libs opencv)
 
-CCFLAGS = -g -Wall $(OPENCV_CCFLAGS) -Iinc -I./ -std=c++11
+CCFLAGS = -g -Wall $(OPENCV_CCFLAGS) -I./ -std=c++11
 LDFLAGS = -Wl, $(OPENCV_LIBS)
 
 OBJDIR 	:= obj
@@ -23,6 +23,8 @@ include lab2/Makefrag
 include lab3/Makefrag
 include lab4/Makefrag
 include lab5/Makefrag
+
+include sidewindow/Makefrag
 
 .PHONY : clean
 clean:
