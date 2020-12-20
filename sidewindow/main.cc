@@ -1,11 +1,13 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 
 #include "side_window_filter.h"
+#include "box_filter.h"
 
 void splitChannels(const uchar * const image, int height, int width, int channel, std::vector<std::vector<float>> &channels) {
   int pixel_num = height * width;
@@ -30,75 +32,37 @@ void mergeChannels(const std::vector<std::vector<float>> &channels, int height, 
   }
 }
 
-void median_filter(const float * src, int height, int width, int radius, float *dst) {
-  int n = (2 * radius + 1) * (2 * radius + 1);
-  int pixel_num = height * width;
-  std::vector<float> avg(n);
-  std::vector<float> tmp(pixel_num);
+void imshowMany(const std::string& _winName, const std::vector<cv::Mat>& ployImages, const std::string& filename="")
+{
+	int nImg = (int)ployImages.size();//获取在同一画布中显示多图的数目  
 
-  for (int h = 0; h < height; ++h) {
-    int offset = h * width;
-    for (int w = 0; w < width; ++w) {
-      int count = 0;
-      for (int i = -radius; i <= radius; ++i) {
-        for (int j = -radius; j <= radius; ++j) {
-          if (0 <= offset + w + (i * width + j) && offset + w + (i * width + j) < pixel_num) {
-            avg[count++] = src[offset + w + (i * width + j)];
-          }
-        }
-      }
-      std::sort(&avg[0], &avg[count]);
-      tmp[offset + w] = avg[count / 2];
-    }
-  }
-  
-  float *ptr = &tmp[0];
-  float *dst_ptr = dst;
-  for (int h = 0; h < height; ++h) {
-    for (int w = 0; w < width; ++w) {
-      dst_ptr[w] = ptr[w];
-    }
-    dst_ptr += width;
-    ptr += width;
-  }
-}
+	cv::Mat dispImg;
 
-void mean_filter(const float *src, int height, int width, int radius, float *dst) {
-#define PIXEL(x, y) src[ \
-      (h - radius < 0 ? radius - h : (h - radius >= height ? height - (h - radius - height) - 1 : h - radius)) * width + \
-      (w - radius < 0 ? radius - w : (w - radius >= width ? width - (w - radius - width) - 1 : w - radius))]
-#define SUM(x, y) sum[x + radius][y + radius]
+	if (nImg <= 0)
+	{
+		printf("Number of arguments too small....\n");
+		return;
+	}
 
-  int n = (2 * radius + 1) * (2 * radius + 1);
-  int pixel_num = height * width;
-  std::vector<float> tmp(pixel_num);
-
-  std::vector<std::vector<float>> sum(height + 2 * radius + 1, std::vector<float>(width + 2 * radius + 1)); 
-  for (int h = 0; h < height + 2 * radius; ++h) {
-      for (int w = 0; w < width + 2 * radius; ++w) {
-        sum[h + 1][w + 1] = sum[h + 1][w] + sum[h][w + 1] - sum[h][w] + PIXEL(h, w);
-      }
-    }
-  for (int h = 0; h < height; ++h) {
-    int offset = h * width;
-    for (int w = 0; w < width; ++w) {
-      tmp[offset + w] = (SUM(h + radius + 1, w + radius + 1) - SUM(h + radius + 1, w - radius) - SUM(h - radius, w + radius + 1) + SUM(h - radius, w - radius)) / n;
-    }
+  int w = ployImages[0].cols;
+  int h = ployImages[0].rows;
+  dispImg.create(cv::Size(w * nImg, h), ployImages[0].type());
+  for (int i = 0; i < nImg; ++i) {
+		int x = ployImages[i].cols; //第(i+1)张子图像的宽度(列数)  
+		int y = ployImages[i].rows;//第(i+1)张子图像的高度（行数）  
+		cv::Mat imgROI = dispImg(cv::Rect(w * i, 0, x, y)); //在画布dispImage中划分ROI区域  
+		cv::resize(ployImages[i], imgROI, cv::Size(x, y)); //将要显示的图像设置为ROI区域大小  
   }
 
-  float *ptr = &tmp[0];
-  float *dst_ptr = dst;
-  for (int h = 0; h < height; ++h) {
-    for (int w = 0; w < width; ++w) {
-      dst_ptr[w] = ptr[w];
-    }
-    dst_ptr += width;
-    ptr += width;
+	cv::imshow(_winName, dispImg);
+  if (filename != "") {
+    cv::imwrite(filename, dispImg);
   }
 }
 
 int main(int argc, char *argv[]) {
-  const std::string img_name = "images/jian20_small_salt_pepper_noise.jpg";
+  // const std::string img_name = "images/jian20_small_salt_pepper_noise.jpg";
+  const std::string img_name = "images/rgbsmall.png";
 
   cv::Mat img         = cv::imread(img_name);
   cv::Mat dst_mean    = cv::Mat::zeros(img.size(), img.type());
@@ -109,7 +73,7 @@ int main(int argc, char *argv[]) {
   int width       = img.cols;
   int channel     = img.channels();
   int radius      = 3;
-  int iteration   = 10;
+  int iteration   = 3;
 
   std::vector<std::vector<float>> channels;
   std::vector<std::vector<float>> results;
@@ -124,41 +88,50 @@ int main(int argc, char *argv[]) {
   splitChannels(img.data, height, width, channel, channels);
 
   init(height, width, radius);
+  std::vector<cv::Mat> imgs(iteration + 1);
+  imgs[0] = img;
   for (int c = 0; c < channel; ++c) {
     side_window_filter(channels[c].data(), height, width, results[c].data());
   }
-  for (int i = 0; i < iteration; ++i) {
+  mergeChannels(results, height, width, channel, dst_side.data);
+  imgs[1] = dst_side;
+  for (int i = 2; i <= iteration; ++i) {
     for (int c = 0; c < channel; ++c) {
       side_window_filter(results[c].data(), height, width, results[c].data());
     }
+    mergeChannels(results, height, width, channel, dst_side.data);
+    imgs[i] = dst_side;
   }
-
-  mergeChannels(results, height, width, channel, dst_side.data);
+  imshowMany("side", imgs, "sidewindow/results/side.png");
 
   for (int c = 0; c < channel; ++c) {
     mean_filter(channels[c].data(), height, width, radius, results[c].data());
   }
-  for (int i = 0; i < iteration; ++i) {
+  mergeChannels(results, height, width, channel, dst_mean.data);
+  imgs[1] = dst_mean;
+  for (int i = 2; i <= iteration; ++i) {
       for (int c = 0; c < channel; ++c) {
           mean_filter(results[c].data(), height, width, radius, results[c].data());
       }
+      mergeChannels(results, height, width, channel, dst_mean.data);
+      imgs[i] = dst_mean;
   }
-  mergeChannels(results, height, width, channel, dst_mean.data);
+  imshowMany("mean", imgs, "sidewindow/results/mean.png");
 
   for (int c = 0; c < channel; ++c) {
     median_filter(channels[c].data(), height, width, radius, results[c].data());
   }
-  for (int i = 0; i < iteration; ++i) {
+  mergeChannels(results, height, width, channel, dst_median.data);
+  imgs[1] = dst_median;
+  for (int i = 2; i <= iteration; ++i) {
       for (int c = 0; c < channel; ++c) {
           median_filter(results[c].data(), height, width, radius, results[c].data());
       }
+      mergeChannels(results, height, width, channel, dst_median.data);
+      imgs[i] = dst_median;
   }
-  mergeChannels(results, height, width, channel, dst_median.data);
+  imshowMany("median", imgs, "sidewindow/results/median.png");
 
-  cv::imshow("original", img);
-  cv::imshow("side-window", dst_side);
-  cv::imshow("mean", dst_mean);
-  cv::imshow("median", dst_median);
   cv::waitKey(0);
   return 0;
 }

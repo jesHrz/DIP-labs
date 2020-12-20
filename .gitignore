@@ -3,3 +3,5 @@
 obj/
 .vscode/
 lab6/venv
+
+sidewindow/results/*

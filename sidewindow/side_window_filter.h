@@ -1,7 +1,6 @@
 #ifndef _SIDE_WINDOW_BOX_FILTER_H_
 #define _SIDE_WINDOW_BOX_FILTER_H_
 
-#include <vector>
 
 const int side_window_directions_num = 8;
 

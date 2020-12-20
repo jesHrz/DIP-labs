@@ -3,6 +3,7 @@ OBJDIRS += sidewindow
 
 PROJ_CCFILES  += sidewindow/main.cc\
 				 sidewindow/side_window_filter.cc\
+				 sidewindow/box_filter.cc\
 
 PROJ_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(PROJ_CCFILES))
 

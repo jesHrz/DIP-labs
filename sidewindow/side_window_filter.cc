@@ -1,5 +1,7 @@
 #include "side_window_filter.h"
+
 #include <cstdio>
+#include <vector>
 
 static std::vector<std::vector<float>> scales;
 static std::vector<std::vector<float>> results;
